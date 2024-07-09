@@ -52,6 +52,9 @@ INCLUDE_COMPONENTS += rfparam_adapter_tmp
 INCLUDE_COMPONENTS += blufi 
 INCLUDE_COMPONENTS += main
 
+INCLUDE_COMPONENTS += axk_common tcp_transport http-parser axk_tls axk_mqtt  
+INCLUDE_COMPONENTS += components
+EXTRA_COMPONENT_DIRS += $(PROJECT_PATH)/components 
 
 ifeq ($(CONFIG_COMPONENT_BUGKILLER_ENABLE),1)
 INCLUDE_COMPONENTS += bugkiller_freertos
@@ -78,9 +81,6 @@ ifeq ($(CONFIG_BLECONTROLLER_LIB),all)
 LDFLAGS := $(filter-out $(addprefix -l$(BLECONTROLLER_LIB_PREFIX), $(filter-out $(BLECONTROLLER_LIB_DEFAULT), $(BLECONTROLLER_LIBS))), $(LDFLAGS))
 endif
 
-EXTRA_COMPONENT_DIRS += $(PROJECT_PATH)/components 
-EXTRA_COMPONENT_DIRS += $(PROJECT_PATH)/main
-INCLUDE_COMPONENTS += axk_common tcp_transport http-parser axk_tls axk_mqtt  
-INCLUDE_COMPONENTS += components
+
 
 include $(BL60X_SDK_PATH)/make_scripts_riscv/project.mk
