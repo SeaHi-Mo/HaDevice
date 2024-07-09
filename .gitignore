@@ -1,0 +1,7 @@
+# IntelliJ/CLion
+.idea
+.vscode
+
+**/build_out
+
+
