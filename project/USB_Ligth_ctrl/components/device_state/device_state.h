@@ -19,11 +19,11 @@
 #include "easy_flash.h"
 #include "dev_ha.h"
 #include <bl_gpio.h>
-
+#include "usblight.h"
 #define DEVICE_HW_SERSION "V1.0.0"
 
 #define DEVICE_QUEUE_HANDLE_SIZE 1024
-#define GPIO_LED_PIN 4
+
 
 typedef enum {
     DEVICE_STATE_NONE = -1,

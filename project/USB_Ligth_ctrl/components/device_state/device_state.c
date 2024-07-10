@@ -53,8 +53,6 @@ static void device_state_task(void* arg)
                     }
                 }
                 else {
-
-
                     blufi_config_start();
                 }
                 //读取HA MQTT信息
@@ -90,6 +88,7 @@ static void device_state_task(void* arg)
                 // wifi_info_t* wifi_info = dev_msg->wifi_info;
                 blog_info("get wifi info ssid=%s password=%s", dev_msg->wifi_info.ssid, dev_msg->wifi_info.password);
                 //如果已经成功正在连接
+
                 if (wifi_device_connect_status()) {
                     //保存信息，并重新启动
                     blog_warn("The system will restart in 2 seconds");
@@ -106,7 +105,7 @@ static void device_state_task(void* arg)
                 }
                 break;
             case DEVICE_STATE_BLUFI_CONFIG:
-
+                device_led_update_state(true);
                 blufi_config_start();
                 break;
             case DEVICE_STATE_HOMEASSISTANT_CONNECT:
@@ -115,7 +114,7 @@ static void device_state_task(void* arg)
                 break;
             case DEVICE_STATE_HOMEASSISTANT_SWTICC_STATE:
                 blog_info("<<<<<<<<<<<<<<< DEVICE_STATE_HOMEASSISTANT_SWTICC_STATE %d", dev_msg->ha_dev->entity_switch->command_switch->switch_state);
-                bl_gpio_output_set(GPIO_LED_PIN, dev_msg->ha_dev->entity_switch->command_switch->switch_state);
+                bl_gpio_output_set(4, dev_msg->ha_dev->entity_switch->command_switch->switch_state);
                 break;
             default:
                 break;
@@ -129,13 +128,16 @@ void device_state_init(void* arg)
 {
     device_queue_handle = xQueueCreate(2, sizeof(dev_msg_t));
     BaseType_t err = xTaskCreate(device_state_task, "device_state_task", DEVICE_QUEUE_HANDLE_SIZE*2, NULL, 10, NULL);
-    bl_gpio_enable_output(GPIO_LED_PIN, 0, 1);
-    bl_gpio_output_set(GPIO_LED_PIN, 0);
+
     wifi_device_init(blufi_wifi_event);
+    device_led_init();
+    // device_led_update_state(true);
+    bl_gpio_output_set(4, 0);
     int boot_cnt = flash_get_device_boot_cnt();
     blog_info("----------------------------------------------> boot cnt=%d", boot_cnt);
     if (boot_cnt>=4) {
         blufi_config_start();
+        device_led_update_state(true);
     }
     else {
         boot_cnt++;
