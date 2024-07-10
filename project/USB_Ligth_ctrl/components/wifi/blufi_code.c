@@ -16,7 +16,7 @@
 #include "wifi_code.h"
 #include "device_state.h"
 
-#define BLUFI_NAME "USB-LIGHT_"
+#define BLUFI_NAME "USB-light"
 
 blufi_config_t g_blufi_config = { 0 };
 static dev_msg_t dev_msg = { 0 };
@@ -133,9 +133,15 @@ static void example_event_callback(_blufi_cb_event_t event, _blufi_cb_param_t* p
     switch (event)
     {
         case AXK_BLUFI_EVENT_INIT_FINISH:
+        {
+            bt_addr_le_t bt_addr;
+            bt_get_local_public_address(&bt_addr);
+            memset(g_blufi_config.ble.blufi.blufiname, 0, 31);
+            sprintf(g_blufi_config.ble.blufi.blufiname, "%s-%02X%02X", BLUFI_NAME, bt_addr.a.val[1], bt_addr.a.val[0]);
             blog_info("BLUFI init finish,ble name=%s", g_blufi_config.ble.blufi.blufiname);
             axk_blufi_adv_start();
-            break;
+        }
+        break;
         case AXK_BLUFI_EVENT_DEINIT_FINISH:
             blog_info("BLUFI deinit finish");
             break;
@@ -298,10 +304,10 @@ static _blufi_callbacks_t _callbacks = {
 void blufi_config_start(void)
 {
     int ret = -1;
-    memset(g_blufi_config.ble.blufi.blufiname, 0, 31);
-    strcpy(g_blufi_config.ble.blufi.blufiname, BLUFI_NAME);
     axk_hal_blufi_init();
     ret = _blufi_host_and_cb_init(&_callbacks);
+
+
     if (ret)
     {
         blog_error("%s initialise failed: %d", __func__, ret);

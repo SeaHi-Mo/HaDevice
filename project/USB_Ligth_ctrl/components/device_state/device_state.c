@@ -47,17 +47,21 @@ static void device_state_task(void* arg)
                             blog_info("scan \"%s\" is OK", dev_msg->wifi_info.ssid);
                             dev_msg->wifi_info.band = 0;
                             dev_msg->wifi_info.chan_id = 4212+wifiMgmr.scan_items[i].channel*5;
+                            flash_save_device_boot_cnt(0);
                             quick_connect_wifi(&dev_msg->wifi_info);
                         }
                     }
                 }
                 else {
+
+
                     blufi_config_start();
                 }
                 //读取HA MQTT信息
                 if (flash_get_mqtt_info(&ha_dev.mqtt_info)) {
                     if (flash_get_ha_device_msg(&ha_dev)) {
                         device_homeAssistant_init(&ha_dev);
+                        flash_save_device_boot_cnt(0);
                     }
                 }
             }
@@ -67,7 +71,7 @@ static void device_state_task(void* arg)
                 blog_info("<<<<<<<<<<<<<<<  DEVICE_STATE_WIFI_CONNECTED");
                 //读取连的AP信息
                 blog_info("ssid =%s,password=%s addr=%s", dev_msg->wifi_info.ssid, dev_msg->wifi_info.password, dev_msg->wifi_info.ipv4_addr);
-                flash_save_device_boot_cnt(0);
+
                 //启动HA 连接
                 homeAssistant_device_start();
                 //如果连接信息保存的不一致，则重新保存
@@ -125,7 +129,7 @@ void device_state_init(void* arg)
 {
     device_queue_handle = xQueueCreate(2, sizeof(dev_msg_t));
     BaseType_t err = xTaskCreate(device_state_task, "device_state_task", DEVICE_QUEUE_HANDLE_SIZE*2, NULL, 10, NULL);
-    bl_gpio_enable_output(GPIO_LED_PIN, 1, 0);
+    bl_gpio_enable_output(GPIO_LED_PIN, 0, 1);
     bl_gpio_output_set(GPIO_LED_PIN, 0);
     wifi_device_init(blufi_wifi_event);
     int boot_cnt = flash_get_device_boot_cnt();
