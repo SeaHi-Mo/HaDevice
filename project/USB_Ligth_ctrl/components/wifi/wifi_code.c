@@ -23,6 +23,7 @@
 
 static dev_msg_t dev_msg = { 0 };
 static bool wifi_status = false;
+static wifi_interface_t wifi_interface;
 
 extern blufi_wifi_conn_event_cb_t sg_blufi_conn_cb;
 
@@ -41,7 +42,7 @@ static wifi_conf_t conf =
 
 void quick_connect_wifi(wifi_info_t* wifi_info)
 {
-    wifi_interface_t wifi_interface;
+
     uint8_t channel = 0;
     size_t len = 0;
     int quick_connect = 1;
@@ -135,8 +136,10 @@ static void event_cb_wifi_event(input_event_t* event, void* private_data)
         {
             blog_info("[APP] [EVT] GOT IP %lld", aos_now_ms());
             blog_info("[SYS] Memory left is %d Bytes", xPortGetFreeHeapSize());
+
             if (ble_is_connected)
                 blufi_wifi_evt_export(BLUFI_STATION_GOT_IP);
+
             wifi_status = true;
             dev_msg.device_state = DEVICE_STATE_WIFI_CONNECTED;
             memset(dev_msg.wifi_info.ipv4_addr, 0, 16);
@@ -227,4 +230,10 @@ void wifi_device_init(blufi_wifi_conn_event_cb_t cb)
 bool wifi_device_connect_status(void)
 {
     return wifi_status;
+}
+
+void wifi_device_stop(void)
+{
+    if (wifi_interface!=NULL)
+        wifi_mgmr_sta_disable(&wifi_interface);
 }

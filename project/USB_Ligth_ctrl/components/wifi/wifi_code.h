@@ -40,6 +40,7 @@ void wifi_device_init(blufi_wifi_conn_event_cb_t cb);
 void quick_connect_wifi(wifi_info_t* wifi_info);
 bool wifi_device_connect_status(void);
 void blufi_config_start(void);
+void wifi_device_stop(void);
 void blufi_wifi_init(void);
 void blufi_wifi_event(int event, void* param);
 #endif

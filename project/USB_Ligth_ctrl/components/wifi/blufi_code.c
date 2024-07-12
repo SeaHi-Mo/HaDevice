@@ -38,13 +38,21 @@ char* get_ip_addr_from_custom_data(char* custom_data)
     }
     char* cjson_root = custom_data;
     cJSON* root = cJSON_Parse(cjson_root);
+
     if (root==NULL)
     {
         blog_error("%s is't json data", cjson_root);
         cJSON_Delete(root);
         return NULL;
     }
-    cJSON* addr = cJSON_GetObjectItem(root, "addr");
+    cJSON* add_type = cJSON_GetObjectItem(root, "mqtt");
+    if (add_type==NULL)
+    {
+        blog_error("%s not \"mqtt\" project ", cjson_root);
+        cJSON_Delete(root);
+        return NULL;
+    }
+    cJSON* addr = cJSON_GetObjectItem(add_type, "addr");
     if (addr==NULL)
     {
         blog_error("%s not \"addr\" project ", cjson_root);
@@ -72,14 +80,21 @@ uint16_t get_port_from_custom_data(char* custom_data)
         cJSON_Delete(root);
         return NULL;
     }
-    cJSON* port_p = cJSON_GetObjectItem(root, "port");
+    cJSON* add_type = cJSON_GetObjectItem(root, "mqtt");
+    if (add_type==NULL)
+    {
+        blog_error("%s not \"mqtt\" project ", cjson_root);
+        cJSON_Delete(root);
+        return NULL;
+    }
+    cJSON* port_p = cJSON_GetObjectItem(add_type, "port");
     if (port_p==NULL)
     {
         blog_error("%s not \"port\" project ", cjson_root);
         cJSON_Delete(root);
         return NULL;
     }
-    uint16_t port = port_p->valueint;
+    uint16_t port = atoi(port_p->valuestring);
     cJSON_Delete(root);
     return port;
 }
@@ -91,6 +106,7 @@ void blufi_wifi_event(int event, void* param)
 
         case BLUFI_STATION_CONNECTED:
             gl_sta_connected = true;
+            wifi_device_stop();
             break;
         case BLUFI_STATION_DISCONNECTED:
             gl_sta_connected = false;
@@ -188,7 +204,7 @@ static void example_event_callback(_blufi_cb_event_t event, _blufi_cb_param_t* p
             axk_hal_disconn_ap();
             break;
         case AXK_BLUFI_EVENT_REPORT_ERROR:
-            blog_info("BLUFI report error, error code %d", param->report_error.state);
+            blog_error("BLUFI report error, error code %d", param->report_error.state);
             axk_blufi_send_error_info(param->report_error.state);
             break;
         case AXK_BLUFI_EVENT_GET_WIFI_STATUS:
@@ -225,8 +241,6 @@ static void example_event_callback(_blufi_cb_event_t event, _blufi_cb_param_t* p
         case AXK_BLUFI_EVENT_RECV_STA_BSSID:
             memset(g_blufi_config.wifi.sta.cwjap_param.bssid, 0, 6);
             memcpy(g_blufi_config.wifi.sta.cwjap_param.bssid, param->sta_bssid.bssid, 6);
-            // sta_config.sta.bssid_set = 1;
-            // esp_wifi_set_config(WIFI_IF_STA, &sta_config);
             blog_info("Recv STA BSSID %s", param->sta_bssid.bssid);
             break;
         case AXK_BLUFI_EVENT_RECV_STA_SSID:

@@ -19,7 +19,7 @@
 
 static homeAssisatnt_device_t ha_dev;
 static QueueHandle_t device_queue_handle;
-
+static TaskHandle_t dev_state;
 
 static void device_state_task(void* arg)
 {
@@ -48,7 +48,8 @@ static void device_state_task(void* arg)
                             dev_msg->wifi_info.band = 0;
                             dev_msg->wifi_info.chan_id = 4212+wifiMgmr.scan_items[i].channel*5;
                             flash_save_device_boot_cnt(0);
-                            quick_connect_wifi(&dev_msg->wifi_info);
+                            if (!ble_is_connected)
+                                quick_connect_wifi(&dev_msg->wifi_info);
                         }
                     }
                 }
@@ -127,7 +128,7 @@ static void device_state_task(void* arg)
 void device_state_init(void* arg)
 {
     device_queue_handle = xQueueCreate(2, sizeof(dev_msg_t));
-    BaseType_t err = xTaskCreate(device_state_task, "device_state_task", DEVICE_QUEUE_HANDLE_SIZE*2, NULL, 10, NULL);
+    BaseType_t err = xTaskCreate(device_state_task, "device_state_task", DEVICE_QUEUE_HANDLE_SIZE*2, NULL, 10, &dev_state);
 
     wifi_device_init(blufi_wifi_event);
     device_led_init();
@@ -138,6 +139,7 @@ void device_state_init(void* arg)
     if (boot_cnt>=4) {
         blufi_config_start();
         device_led_update_state(true);
+        wifi_device_stop();
     }
     else {
         boot_cnt++;
