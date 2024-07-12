@@ -14,8 +14,12 @@
 #include "device_state.h"
 #include "homeAssistantPort.h"
 
-#define MQTT_SERVER_DEFAULT_HOST ""
+#define MQTT_SERVER_DEFAULT_HOST "0.0.0.0"
 #define MQTT_SERVER_DEFAULT_PORT 1883
+
+#define HA_DEVICE_NAME "USB小夜灯控制器"
+#define HA_DEVICE_MANUFACTURER "SeaHi"
+#define HA_DEVICE_MODEL "Ai-WB2"
 
 void device_homeAssistant_init(homeAssisatnt_device_t* dev_ha);
 

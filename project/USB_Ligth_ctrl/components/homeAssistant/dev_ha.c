@@ -23,8 +23,8 @@ void ha_event_cb(ha_event_t event, homeAssisatnt_device_t* dev)
         case HA_EVENT_MQTT_CONNECED:
             HA_LOG_I("<<<<<<<<<<  HA_EVENT_MQTT_CONNECED\r\n");
             static ha_sw_entity_t sw1 = {
-                .name = "通断器",
-                .unique_id = "ttl",
+                .name = "USB小夜灯",
+                .unique_id = "light1",
                 .icon = "mdi:power",
             };
             homeAssistant_device_add_entity(CONFIG_HA_ENTITY_SWITCH, &sw1);
@@ -60,10 +60,10 @@ void device_homeAssistant_init(homeAssisatnt_device_t* dev_ha)
     uint8_t MAC[6] = { 0 };
 
     wifi_mgmr_sta_mac_get(MAC);
-    if (dev_ha->name==NULL) dev_ha->name = "HA交流通断器";
+    if (dev_ha->name==NULL) dev_ha->name = HA_DEVICE_NAME;
     dev_ha->hw_version = DEVICE_HW_SERSION;
-    if (dev_ha->manufacturer==NULL) dev_ha->manufacturer = "SeaHi";
-    if (dev_ha->model==NULL) dev_ha->model = "Ai-WB2";
+    if (dev_ha->manufacturer==NULL) dev_ha->manufacturer = HA_DEVICE_MANUFACTURER;
+    if (dev_ha->model==NULL) dev_ha->model = HA_DEVICE_MODEL;
     if (dev_ha->identifiers==NULL) {
         dev_ha->identifiers = pvPortMalloc(64);
         memset(dev_ha->identifiers, 0, 64);

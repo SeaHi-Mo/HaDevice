@@ -44,3 +44,28 @@ make flash p=/dev/ttyUSB0 -j32
 
 打开HomeAssistant 的MQTT 集成，就能看到USB 小夜灯控制器设备。
 ![alt text](./img/image2.png)
+
+## 自定义修改指导
+
+## 修改设备信息
+
+- 默认设备名称为：**“USB小夜灯控制器”**
+- 默认设备厂商为：**“SeaHi”**
+- 默认模组名称：**“Ai-WB2”**
+
+自定义命名方法：打开 ***[/components/homeAssistant/dev.ha.h](components/homeAssistant/dev_ha.h)***,
+
+- 设备名称修改：修改**HA_DEVICE_NAME** 宏的默认内容
+- 设备厂商修改：修改**HA_DEVICE_MANUFACTURER** 宏的默认内容
+- 设备模组修改：修改**HA_DEVICE_MODEL** 宏的默认内容
+
+## 修改实体信息
+
+- 默认实体名称：**“USB小夜灯”**
+- 默认unique_id（不建议修改）：**“light1”**
+- 默认icon: **“mdi:power”**(一个电源图标)
+
+修改方法：打开 ***[components/homeAssistant/dev_ha.c](components/homeAssistant/dev_ha.c)***，在 **static ha_sw_entity_t sw1** 对象当中修改信息：
+![alt text](./img/image3.png)
+
+## 添加实体请参考[HomeAssistant/README.md](../../HomeAssistant/README.md)
