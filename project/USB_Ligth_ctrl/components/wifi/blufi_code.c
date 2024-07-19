@@ -22,6 +22,7 @@ blufi_config_t g_blufi_config = { 0 };
 static dev_msg_t dev_msg = { 0 };
 static int scan_counter;
 bool ble_is_connected = false;
+bool blufi_is_start = false;
 static bool gl_sta_connected = false;
 static char data_buff[128] = { 0 };
 /**
@@ -135,6 +136,7 @@ void blufi_wifi_event(int event, void* param)
             g_blufi_config.wifi.cwmode = WIFIMODE_STA;
             dev_msg.device_state = DEVICE_STATE_ATCMD_WIFICFG_SET;
             device_state_update(false, &dev_msg);
+            blufi_is_start = false;
         }
         break;
         default:
@@ -156,6 +158,7 @@ static void example_event_callback(_blufi_cb_event_t event, _blufi_cb_param_t* p
             sprintf(g_blufi_config.ble.blufi.blufiname, "%s-%02X%02X", BLUFI_NAME, bt_addr.a.val[1], bt_addr.a.val[0]);
             blog_info("BLUFI init finish,ble name=%s", g_blufi_config.ble.blufi.blufiname);
             axk_blufi_adv_start();
+            blufi_is_start = true;
         }
         break;
         case AXK_BLUFI_EVENT_DEINIT_FINISH:

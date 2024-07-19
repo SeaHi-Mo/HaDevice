@@ -24,7 +24,7 @@
 #include "wifi_interface.h"
 
 extern bool ble_is_connected;
-
+extern bool blufi_is_start;
 typedef struct wifi_code_info {
     char ssid[64];
     char password[64];

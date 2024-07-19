@@ -59,7 +59,8 @@ static void device_state_task(void* arg)
                 //读取HA MQTT信息
                 if (flash_get_mqtt_info(&ha_dev.mqtt_info)) {
                     if (flash_get_ha_device_msg(&ha_dev)) {
-                        device_homeAssistant_init(&ha_dev);
+                        if (!blufi_is_start)
+                            device_homeAssistant_init(&ha_dev);
                         flash_save_device_boot_cnt(0);
                     }
                 }
@@ -94,6 +95,7 @@ static void device_state_task(void* arg)
                     //保存信息，并重新启动
                     blog_warn("The system will restart in 2 seconds");
                     flash_save_wifi_info(&dev_msg->wifi_info);
+                    flash_save_device_boot_cnt(0);
                     for (size_t i = 0; i < 3; i++)
                     {
                         vTaskDelay(pdMS_TO_TICKS(1000));

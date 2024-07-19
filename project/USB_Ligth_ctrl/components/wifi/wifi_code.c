@@ -98,9 +98,10 @@ static void event_cb_wifi_event(input_event_t* event, void* private_data)
         {
             blog_info("[APP] [EVT] SCAN Done %lld", aos_now_ms());
             // wifi_mgmr_cli_scanlist();
-
-            dev_msg.device_state = DEVICE_SATE_SYSYTEM_INIT;
-            device_state_update(true, &dev_msg); //WiFi 准备OK,等待连接
+            if (!blufi_is_start) {
+                dev_msg.device_state = DEVICE_SATE_SYSYTEM_INIT;
+                device_state_update(true, &dev_msg); //WiFi 准备OK,等待连接
+            }
         }
         break;
         case CODE_WIFI_ON_DISCONNECT:
